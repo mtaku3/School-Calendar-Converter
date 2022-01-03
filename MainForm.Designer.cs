@@ -42,12 +42,12 @@
             this.excelFileTextBox.Location = new System.Drawing.Point(12, 24);
             this.excelFileTextBox.Name = "excelFileTextBox";
             this.excelFileTextBox.ReadOnly = true;
-            this.excelFileTextBox.Size = new System.Drawing.Size(725, 19);
+            this.excelFileTextBox.Size = new System.Drawing.Size(380, 19);
             this.excelFileTextBox.TabIndex = 0;
             // 
             // excelFileButton
             // 
-            this.excelFileButton.Location = new System.Drawing.Point(743, 22);
+            this.excelFileButton.Location = new System.Drawing.Point(398, 22);
             this.excelFileButton.Name = "excelFileButton";
             this.excelFileButton.Size = new System.Drawing.Size(45, 23);
             this.excelFileButton.TabIndex = 1;
@@ -66,7 +66,7 @@
             // 
             // executeButton
             // 
-            this.executeButton.Location = new System.Drawing.Point(713, 415);
+            this.executeButton.Location = new System.Drawing.Point(368, 53);
             this.executeButton.Name = "executeButton";
             this.executeButton.Size = new System.Drawing.Size(75, 23);
             this.executeButton.TabIndex = 5;
@@ -77,7 +77,7 @@
             // pdfFileLinkLabel
             // 
             this.pdfFileLinkLabel.AutoSize = true;
-            this.pdfFileLinkLabel.Location = new System.Drawing.Point(555, 9);
+            this.pdfFileLinkLabel.Location = new System.Drawing.Point(210, 9);
             this.pdfFileLinkLabel.Name = "pdfFileLinkLabel";
             this.pdfFileLinkLabel.Size = new System.Drawing.Size(130, 12);
             this.pdfFileLinkLabel.TabIndex = 6;
@@ -88,7 +88,7 @@
             // PDF2ExcelLinkLabel
             // 
             this.PDF2ExcelLinkLabel.AutoSize = true;
-            this.PDF2ExcelLinkLabel.Location = new System.Drawing.Point(691, 9);
+            this.PDF2ExcelLinkLabel.Location = new System.Drawing.Point(346, 9);
             this.PDF2ExcelLinkLabel.Name = "PDF2ExcelLinkLabel";
             this.PDF2ExcelLinkLabel.Size = new System.Drawing.Size(97, 12);
             this.PDF2ExcelLinkLabel.TabIndex = 7;
@@ -100,7 +100,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(455, 88);
             this.Controls.Add(this.PDF2ExcelLinkLabel);
             this.Controls.Add(this.pdfFileLinkLabel);
             this.Controls.Add(this.executeButton);

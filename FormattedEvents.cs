@@ -36,7 +36,7 @@ namespace School_Calendar_Converter
 
             stringList.Add(subject);
             stringList.Add(startDateTime.ToString("MM/dd/yyyy")); // 例: 05/30/2020
-            if (allDayEvent)
+            if (startDateTime == endDateTime)
             {
                 stringList.AddRange(new List<string> { "", "", "" });
             }
@@ -86,7 +86,7 @@ namespace School_Calendar_Converter
                         }
                     }
 
-                    var formattedEvent = startDateTime == endDateTime ? new FormattedEvent(eventSubject, startDateTime) : new FormattedEvent(eventSubject, startDateTime, endDateTime, false);
+                    var formattedEvent = new FormattedEvent(eventSubject, startDateTime, endDateTime);
                     formattedEvents.Add(formattedEvent);
                 }
             }
