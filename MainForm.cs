@@ -9,9 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
-using Excel = Microsoft.Office.Interop.Excel;
 using System.Text.RegularExpressions;
-using Range = Microsoft.Office.Interop.Excel.Range;
+using UglyToad.PdfPig;
+using Tabula;
+using Tabula.Extractors;
 
 namespace School_Calendar_Converter
 {
@@ -21,65 +22,96 @@ namespace School_Calendar_Converter
         {
             InitializeComponent();
 
-            excelFileDialog.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            pdfFileDialog.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
         }
 
-        private static Dictionary<string, Dictionary<DateTime, List<string>>> LoadExcelFile(string ExcelFilePath)
+        private static Dictionary<string, Dictionary<DateTime, List<string>>> LoadPDFFile(string PDFFilePath)
         {
-            // Excelクライアントの初期化
-            Excel.Application excel = new Excel.Application();
-            excel.Visible = false;
-
-            // Excelワークブックからシート読み込み
-            Excel.Workbook workbook = excel.Workbooks.Open(ExcelFilePath, Type.Missing, true);
-            Excel.Worksheet worksheet = workbook.Sheets[1];
-
             var nonFormattedEvents = new Dictionary<string, Dictionary<DateTime, List<string>>>
             {
                 { "MainCourse", new Dictionary<DateTime, List<string>>() }, // 本科
                 { "AdvancedCourse", new Dictionary<DateTime, List<string>>() } // 専攻科
             };
 
-            // 各月のタイトルセルを探す
-            string pattern = ".+年.*（[0-9]+）.*月";
-            for (int row = 1; row <= 100; row++)
+            using (PdfDocument document = PdfDocument.Open(PDFFilePath, new ParsingOptions() { ClipPaths = true }))
             {
-                for (int col = 1; col <= 26; col++)
+                ObjectExtractor oe = new ObjectExtractor(document);
+
+                for (int pageNumber = 1; pageNumber <= document.NumberOfPages; pageNumber++)
                 {
-                    Range cell = worksheet.Cells[row, col];
-                    if (cell.Value2 != null && Regex.IsMatch(Convert.ToString(cell.Value2), pattern))
+                    PageArea page = oe.Extract(pageNumber);
+
+                    IExtractionAlgorithm ea = new SpreadsheetExtractionAlgorithm();
+                    List<Table> tables = ea.Extract(page);
+                    var table = tables[0];
+
+                    // 初めの年・月を取得
+                    string startDateStr = "";
+                    for (int col = 0; col <= 2; col++)
                     {
-                        string matchedString = Regex.Match(Convert.ToString(cell.Value2), pattern).Value;
-                        int year = Convert.ToInt32(Regex.Match(matchedString, "(?<=（)[0-9]+(?=）)").Value);
-                        int month = Convert.ToInt32(Regex.Match(matchedString, "[0-9]+(?=月)").Value);
+                        if ((startDateStr = table[0, col].GetText()) != "") break;
+                    }
+                    if (startDateStr == "") continue;
 
-                        // 各月の最終日
-                        int lastDay = DateTime.Parse($"{year}/{month % 12 + 1}/1").AddDays(-1).Day;
+                    int startYear = Convert.ToInt32(Regex.Match(startDateStr, @"(?<=\()[0-9]+(?=\))").Value);
+                    int startMonth = Convert.ToInt32(Regex.Match(startDateStr, @"[0-9]+(?=月)").Value);
+                    DateTime startDateTime = new DateTime(startYear, startMonth, 1);
 
-                        // 日付ごとのイベントを取得
-                        char[] separator = { '／', '\n', ' ', '　' };
-                        for (int day = 1; day <= lastDay; day++)
+                    int startCol; bool startColFound = false;
+                    for (startCol = 0; startCol <= 2; startCol++)
+                    {
+                        int num;
+                        Int32.TryParse(table[3, startCol].GetText(), out num);
+                        if (num == 1)
                         {
-                            DateTime date = new DateTime(year, month, day);
+                            startColFound = true;
+                            break;
+                        }
+                    }
+                    if (!startColFound) continue;
 
-                            string mainCourseEventsStr = "", advancedCourseEventsStr = "";
+                    for (int m = 0; m < 4; m++)
+                    {
+                        int daysOfMonth = startDateTime.AddMonths(1).AddDays(-1).Day;
 
-                            Range mainCourseCell = worksheet.Cells[row + day + 2, col + 2];
-                            mainCourseEventsStr = mainCourseCell.Value2 != null ? Convert.ToString(mainCourseCell.Value2) : "";
-                            if (mainCourseEventsStr != "")
+                        for (int day = 1; day <= daysOfMonth; day++)
+                        {
+                            int row = 3 + day - 1;
+
+                            // 行番号を探索
+                            int col; bool colFound = false;
+                            for (col = startCol + 6 * m; col <= startCol + 7 * m; col++)
                             {
-                                var mainCourseEvents = new List<string>(mainCourseEventsStr.Split(separator));
-                                nonFormattedEvents["MainCourse"].Add(date, mainCourseEvents);
+                                int checkDay;
+                                Int32.TryParse(table[row, col].GetText(), out checkDay);
+                                string dateStr = table[row, col + 1].GetText();
+                                if (checkDay == day && table[row, col + 1].GetText() == startDateTime.AddDays(day - 1).ToString("ddd"))
+                                {
+                                    colFound = true;
+                                    break;
+                                }
                             }
+                            if (!colFound) continue;
 
-                            Range advancedCourseCell = worksheet.Cells[row + day + 2, col + 3];
-                            advancedCourseEventsStr = advancedCourseCell.Value2 != null ? Convert.ToString(advancedCourseCell.Value2) : "";
-                            if (advancedCourseEventsStr != "")
+                            string mainCourseStr = table[row, col + 2].GetText();
+                            string advancedCourseStr = table[row, col + 3].GetText();
+
+                            char[] separator = { '/', '\r' };
+                            var mainCourseEvents = new List<string>(mainCourseStr.Split(separator));
+                            var advancedCourseEvents = new List<string>(advancedCourseStr.Split(separator));
+
+                            if (mainCourseStr != "")
                             {
-                                var advancedCourseEvents = new List<string>(advancedCourseEventsStr.Split(separator));
-                                nonFormattedEvents["AdvancedCourse"].Add(date, advancedCourseEvents);
+                                nonFormattedEvents["MainCourse"].Add(startDateTime.AddDays(day - 1), mainCourseEvents);
+                            }
+                            
+                            if (!advancedCourseStr.All(char.IsDigit) && advancedCourseStr != "")
+                            {
+                                nonFormattedEvents["AdvancedCourse"].Add(startDateTime.AddDays(day - 1), advancedCourseEvents);
                             }
                         }
+
+                        startDateTime = startDateTime.AddMonths(1);
                     }
                 }
             }
@@ -90,9 +122,9 @@ namespace School_Calendar_Converter
         private void excelFileButton_Click(object sender, EventArgs e)
         {
             // PDFファイルのパス指定ダイアログを表示
-            if (excelFileDialog.ShowDialog() == DialogResult.OK)
+            if (pdfFileDialog.ShowDialog() == DialogResult.OK)
             {
-                excelFileTextBox.Text = excelFileDialog.FileName;
+                pdfFileTextBox.Text = pdfFileDialog.FileName;
             }
         }
 
@@ -113,7 +145,7 @@ namespace School_Calendar_Converter
             // ワークスペースフォルダを作成
             Directory.CreateDirectory(workspacePath);
 
-            var nonFormattedEvents = LoadExcelFile(excelFileDialog.FileName);
+            var nonFormattedEvents = LoadPDFFile(pdfFileDialog.FileName);
 
             /* - CSVファイル書き出し - */
             string mainCourseCSVFilePath = Path.Combine(workspacePath, "本科.csv");
