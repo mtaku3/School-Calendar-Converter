@@ -12,4 +12,4 @@
 ※ ステップ2での変換精度や表記ゆれなどが原因で正確に読み込むことができない場合があります。
 
 ## 共有Google カレンダーリンク集
-- 令和3年度 [本科](https://calendar.google.com/calendar/u/0?cid=cjV1a2lqY2d0N2pnMXZ2NzFnbzZ2ZGZkbThAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) [専攻科](https://calendar.google.com/calendar/u/0?cid=YmJtdGYxNDlsMThiaXBucW9wdjAyNzVkZDhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
+- 令和3年度 [本科](https://calendar.google.com/calendar/u/0?cid=ZmcwYWR0Nmc3b2EzYWtlbW0zaDBmM2JjdGdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) [専攻科](https://calendar.google.com/calendar/u/0?cid=YXA4N29uNmIwbGM5OHVia2o2MDU1OHQ3bjhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
