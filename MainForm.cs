@@ -92,8 +92,8 @@ namespace School_Calendar_Converter
                             }
                             if (!colFound)
                             {
-                                nonFormattedEvents["MainCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/mm/dd")}検出ミス" });
-                                nonFormattedEvents["AdvancedCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/mm/dd")}検出ミス" });
+                                nonFormattedEvents["MainCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/MMM/d")}検出ミス" });
+                                nonFormattedEvents["AdvancedCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/MMM/d")}検出ミス" });
                             }
 
                             string mainCourseStr = table[row, col + 2].GetText();
