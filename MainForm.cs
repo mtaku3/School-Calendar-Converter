@@ -57,41 +57,44 @@ namespace School_Calendar_Converter
                     int startMonth = Convert.ToInt32(Regex.Match(startDateStr, @"[0-9]+(?=月)").Value);
                     DateTime startDateTime = new DateTime(startYear, startMonth, 1);
 
-                    int startCol; bool startColFound = false;
-                    for (startCol = 0; startCol <= 2; startCol++)
-                    {
-                        int num;
-                        Int32.TryParse(table[3, startCol].GetText(), out num);
-                        if (num == 1)
-                        {
-                            startColFound = true;
-                            break;
-                        }
-                    }
-                    if (!startColFound) continue;
+                    Dictionary<DateTime, int> foundCols = new Dictionary<DateTime, int>();
 
                     for (int m = 0; m < 4; m++)
                     {
                         int daysOfMonth = startDateTime.AddMonths(1).AddDays(-1).Day;
+                        DateTime currentDateTime = startDateTime;
 
-                        for (int day = 1; day <= daysOfMonth; day++)
+                        for (int day = 1; day <= daysOfMonth; day++, currentDateTime = currentDateTime.AddDays(1))
                         {
                             int row = 3 + day - 1;
 
-                            // 行番号を探索
-                            int col; bool colFound = false;
-                            for (col = startCol + 6 * m; col <= startCol + 7 * m; col++)
+                            // 列番号を探索
+                            int col = 0; bool colFound = false;
+                            if (m != 0)
+                            {
+                                DateTime previousMonth = currentDateTime.AddMonths(-1);
+                                if (previousMonth.Day == day && foundCols.ContainsKey(previousMonth))
+                                {
+                                    col = foundCols[previousMonth] + 2;
+                                }
+                            }
+                            for (; col <= table.ColumnCount; col++)
                             {
                                 int checkDay;
                                 Int32.TryParse(table[row, col].GetText(), out checkDay);
                                 string dateStr = table[row, col + 1].GetText();
-                                if (checkDay == day && table[row, col + 1].GetText() == startDateTime.AddDays(day - 1).ToString("ddd"))
+                                if (checkDay == day && dateStr == currentDateTime.ToString("ddd"))
                                 {
+                                    foundCols.Add(currentDateTime, col);
                                     colFound = true;
                                     break;
                                 }
                             }
-                            if (!colFound) continue;
+                            if (!colFound)
+                            {
+                                nonFormattedEvents["MainCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/mm/dd")}検出ミス" });
+                                nonFormattedEvents["AdvancedCourse"].Add(currentDateTime, new List<string>() { $"{currentDateTime.ToString("yyyy/mm/dd")}検出ミス" });
+                            }
 
                             string mainCourseStr = table[row, col + 2].GetText();
                             string advancedCourseStr = table[row, col + 3].GetText();
@@ -102,12 +105,12 @@ namespace School_Calendar_Converter
 
                             if (mainCourseStr != "")
                             {
-                                nonFormattedEvents["MainCourse"].Add(startDateTime.AddDays(day - 1), mainCourseEvents);
+                                nonFormattedEvents["MainCourse"].Add(currentDateTime, mainCourseEvents);
                             }
-                            
+
                             if (!advancedCourseStr.All(char.IsDigit) && advancedCourseStr != "")
                             {
-                                nonFormattedEvents["AdvancedCourse"].Add(startDateTime.AddDays(day - 1), advancedCourseEvents);
+                                nonFormattedEvents["AdvancedCourse"].Add(currentDateTime, advancedCourseEvents);
                             }
                         }
 
