@@ -86,7 +86,7 @@ namespace School_Calendar_Converter
                         }
                     }
 
-                    var formattedEvent = new FormattedEvent(eventSubject, startDateTime, endDateTime);
+                    var formattedEvent = new FormattedEvent(eventSubject, startDateTime, endDateTime.AddDays(1));
                     formattedEvents.Add(formattedEvent);
                 }
             }
