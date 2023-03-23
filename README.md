@@ -11,5 +11,6 @@
 ※ Tabulaの変換精度や表記ゆれなどが原因で正確に読み込むことができない場合があります。
 
 ## 共有Google カレンダーリンク集
+- 令和5年度 [本科](https://calendar.google.com/calendar/embed?src=370462ad4ded83d1d23b1a88ced3c021bebc1854479e8a1dbd03b9f55041ee79%40group.calendar.google.com&ctz=Asia%2FTokyo) [専攻科](https://calendar.google.com/calendar/embed?src=7222b3df27a03bb347bc57c1159e2a127140d7fb9f67fff3090c9413836bc76c%40group.calendar.google.com&ctz=Asia%2FTokyo)
 - 令和4年度 [本科](https://calendar.google.com/calendar/embed?src=eijd7dqp26h15a9k3uat33uqoo%40group.calendar.google.com&ctz=Asia%2FTokyo) [専攻科](https://calendar.google.com/calendar/embed?src=qcj7pkhq9irvnkv4n9ulp0dcgo%40group.calendar.google.com&ctz=Asia%2FTokyo)
 - 令和3年度 [本科](https://calendar.google.com/calendar/embed?src=fg0adt6g7oa3akemm3h0f3bctg%40group.calendar.google.com&ctz=Asia%2FTokyo) [専攻科](https://calendar.google.com/calendar/embed?src=ap87on6b0lc98ubkj60558t7n8%40group.calendar.google.com&ctz=Asia%2FTokyo)
